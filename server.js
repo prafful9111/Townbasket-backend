@@ -109,6 +109,47 @@ app.get('/user', async (req, res) => {
     }
 });
 
+
+
+const Product = require("./models/Product");  // ← import the model
+
+// Create a new product
+app.post("/seller/products", async (req, res) => {
+  try {
+    // you probably want to attach sellerId from the JWT in a real app
+    const {
+      name,
+      description,
+      category,
+      price,
+      sku,
+      quantity,
+      images,
+      onSale,
+      featured,
+    } = req.body;
+
+    const product = new Product({
+      name,
+      description,
+      category,
+      price,
+      sku,
+      quantity,
+      images,
+      onSale,
+      featured,
+      // sellerId: (you could pull this from req.user after verifying JWT)
+    });
+
+    await product.save();
+    res.status(201).json(product);
+  } catch (err) {
+    console.error("Error creating product:", err);
+    res.status(500).json({ message: "Failed to create product", error: err });
+  }
+});
+
 // Test route to check server is working
 app.get('/', (req, res) => {
     res.send('Backend is working!');
